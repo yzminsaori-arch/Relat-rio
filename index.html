@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Executivo - Multiplataforma</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="lightbox" class="lightbox hidden">
+        <button id="btn-lightbox-close" class="lightbox__close">×</button>
+        <img id="lightbox-img" class="lightbox__img" src="" alt="">
+    </div>
+
+    <main id="login-view" class="login">
+        <section class="login__box">
+            <h1 class="login__title">SISTEMA</h1>
+            <form id="login-form" class="login__form">
+                <input type="text" id="username" class="login__input" placeholder="Usuário" required>
+                <input type="password" id="password" class="login__input" placeholder="Senha" required>
+                <button type="submit" class="btn btn--action">Acessar</button>
+                <p id="login-error" class="login__error hidden">Acesso Bloqueado.</p>
+            </form>
+        </section>
+    </main>
+
+    <div id="app-view" class="app hidden">
+        <header class="header">
+            <div class="header__top">
+                <h2 class="header__logo">PORTFÓLIO</h2>
+                <div class="header__controls">
+                    <button id="btn-theme" class="btn btn--text">🌓</button>
+                    <button id="btn-menu-toggle" class="btn btn--text header__hamburger">☰</button>
+                </div>
+            </div>
+            <nav id="mobile-menu" class="header__nav hidden">
+                <button id="btn-home" class="btn btn--nav">Início</button>
+                <button id="btn-drafts" class="btn btn--nav admin-only hidden">Rascunhos</button>
+                <button id="btn-edit-report" class="btn btn--nav admin-only hidden">Editar Relatório</button>
+                <button id="btn-create" class="btn btn--nav admin-only hidden">Novo Projeto</button>
+                <button id="btn-logout" class="btn btn--nav">Sair</button>
+            </nav>
+            <nav id="catalog-nav" class="header__catalog"></nav>
+        </header>
+
+        <main id="home-view" class="view">
+            <section class="hero">
+                <h1 class="hero__title">RELATÓRIO</h1>
+                <div id="main-report-content" class="hero__content"></div>
+            </section>
+            
+            <section class="showcase">
+                <h2 class="showcase__title">Publicações</h2>
+                <div id="project-grid" class="showcase__grid"></div>
+            </section>
+        </main>
+
+        <main id="drafts-view" class="view hidden">
+            <section class="showcase">
+                <h2 class="showcase__title">Rascunhos Salvos</h2>
+                <div id="drafts-grid" class="showcase__grid"></div>
+            </section>
+        </main>
+
+        <main id="report-edit-view" class="view hidden">
+            <section class="editor">
+                <h2 class="editor__title">Relatório Geral</h2>
+                <form id="report-form" class="editor__form">
+                    <textarea id="main-report-input" class="editor__textarea" required></textarea>
+                    <button type="submit" class="btn btn--action">Atualizar</button>
+                </form>
+            </section>
+        </main>
+
+        <main id="form-view" class="view hidden">
+            <section class="editor">
+                <h2 id="form-title" class="editor__title">Configuração de Projeto</h2>
+                <form id="project-form" class="editor__form">
+                    <input type="text" id="proj-title" class="editor__input" placeholder="Título" required>
+                    <input type="file" id="proj-files" class="editor__input" accept="image/*" multiple>
+                    <input type="text" id="proj-summary" class="editor__input" placeholder="Resumo" required>
+                    <textarea id="proj-content" class="editor__textarea" placeholder="Conteúdo completo..." required></textarea>
+                    <div class="editor__actions">
+                        <button type="button" id="btn-save-draft" class="btn btn--secondary">Salvar Rascunho</button>
+                        <button type="submit" id="btn-publish" class="btn btn--action">Publicar</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+
+        <main id="detail-view" class="view hidden">
+            <article class="detail">
+                <div class="detail__controls">
+                    <button id="btn-back" class="btn btn--secondary">Voltar</button>
+                    <div id="detail-admin-actions" class="detail__actions admin-only hidden">
+                        <button id="btn-edit-proj" class="btn btn--secondary">Editar</button>
+                        <button id="btn-delete-proj" class="btn btn--danger">Excluir</button>
+                    </div>
+                </div>
+                <div class="detail__header">
+                    <h1 id="detail-title" class="detail__title"></h1>
+                    <p id="detail-summary" class="detail__summary"></p>
+                </div>
+                
+                <div id="carousel" class="carousel hidden">
+                    <div class="carousel__container">
+                        <button id="btn-prev" class="carousel__btn carousel__btn--prev hidden">❮</button>
+                        <img id="carousel-img" class="carousel__img" src="" alt="">
+                        <button id="btn-next" class="carousel__btn carousel__btn--next hidden">❯</button>
+                    </div>
+                    <div id="carousel-indicator" class="carousel__indicator"></div>
+                </div>
+
+                <div id="detail-body" class="detail__body"></div>
+            </article>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
