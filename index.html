@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Estágio_CEEPSTI</title>
+    <title>Sistema de Relatórios - Elite</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
 
     <main id="login-view" class="login">
         <div class="login__cover">
-            <img src="relatorio-foto.jpg" alt="Capa" class="login__cover-img">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" alt="Capa" class="login__cover-img">
         </div>
         <section class="login__box">
             <h1 class="login__title">SISTEMA</h1>
@@ -35,6 +35,7 @@
                 </div>
                 <div class="header__controls">
                     <div class="header__profile">
+                        <input type="file" id="avatar-upload" class="hidden" accept="image/*">
                         <img id="user-avatar" class="header__avatar" src="" alt="Avatar">
                         <span id="user-name" class="header__username"></span>
                     </div>
@@ -64,7 +65,7 @@
             <article class="report-display">
                 <div class="report-display__header">
                     <span class="report-display__icon">⭐</span>
-                    <h1 class="report-display__title">Relatório de Estágio</h1>
+                    <h1 class="report-display__title">Relatório Geral de Estágio</h1>
                 </div>
                 <div id="main-report-content" class="report-display__content"></div>
             </article>
