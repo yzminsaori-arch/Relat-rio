@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const views = {
         home: document.getElementById('home-view'),
+        report: document.getElementById('report-view'),
         drafts: document.getElementById('drafts-view'),
         reportEdit: document.getElementById('report-edit-view'),
         form: document.getElementById('form-view'),
@@ -256,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('btn-home').addEventListener('click', () => switchView('home'));
+    document.getElementById('btn-report').addEventListener('click', () => switchView('report'));
     document.getElementById('btn-drafts').addEventListener('click', () => switchView('drafts'));
     document.getElementById('btn-edit-report').addEventListener('click', () => switchView('reportEdit'));
     document.getElementById('btn-back').addEventListener('click', () => switchView('home'));
@@ -304,6 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
         mainReport = document.getElementById('main-report-input').value;
         localStorage.setItem('elite_main_report', mainReport);
         renderGrids();
-        switchView('home');
+        switchView('report');
     });
 });
