@@ -43,18 +43,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const userAvatar = document.getElementById('user-avatar');
     const userName = document.getElementById('user-name');
+    const avatarUpload = document.getElementById('avatar-upload');
 
     let projects = JSON.parse(localStorage.getItem('elite_portfolio_data')) || [];
     let mainReport = localStorage.getItem('elite_main_report') || 'Relatório central vazio.';
     let currentAdminStatus = false;
+    let currentActiveRole = '';
     let editingProjectId = null;
     let currentViewingProject = null;
     let currentImageIndex = 0;
-
-   const avatars = {
-        admin: "foto-admin.jpg",
-        cliente: "foto-cliente.jpg"
-    };
 
     function switchView(viewName) {
         Object.values(views).forEach(v => v.classList.add('hidden'));
@@ -198,6 +195,27 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    userAvatar.addEventListener('click', () => {
+        avatarUpload.click();
+    });
+
+    avatarUpload.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const base64 = event.target.result;
+                userAvatar.src = base64;
+                try {
+                    localStorage.setItem(`elite_avatar_${currentActiveRole}`, base64);
+                } catch (error) {
+                    alert("A imagem de perfil excede o limite de memória. Escolha uma imagem menor.");
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
     btnPrev.addEventListener('click', () => {
         currentImageIndex = currentImageIndex > 0 ? currentImageIndex - 1 : currentViewingProject.files.length - 1;
         updateCarousel();
@@ -225,16 +243,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (user === 'admin' && pass === '09072223') {
             currentAdminStatus = true;
+            currentActiveRole = 'admin';
             userName.textContent = "Yasmin_Soares";
-            userAvatar.src = avatars.admin;
         } else if (user === 'cliente' && pass === '1234567') {
             currentAdminStatus = false;
-            userName.textContent = "Convidado";
-            userAvatar.src = avatars.cliente;
+            currentActiveRole = 'cliente';
+            userName.textContent = "Cliente Convidado";
         } else {
             document.getElementById('login-error').classList.remove('hidden');
             return;
         }
+
+        const savedAvatar = localStorage.getItem(`elite_avatar_${currentActiveRole}`);
+        userAvatar.src = savedAvatar || `https://ui-avatars.com/api/?name=${currentActiveRole}&background=ff1493&color=fff`;
 
         document.querySelectorAll('.admin-only').forEach(el => {
             currentAdminStatus ? el.classList.remove('hidden') : el.classList.add('hidden');
