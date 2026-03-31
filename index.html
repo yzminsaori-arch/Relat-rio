@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório Executivo - Multiplataforma</title>
+    <title>Sistema de Relatórios - Elite</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,12 +13,15 @@
     </div>
 
     <main id="login-view" class="login">
+        <div class="login__cover">
+            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" alt="Capa" class="login__cover-img">
+        </div>
         <section class="login__box">
             <h1 class="login__title">SISTEMA</h1>
             <form id="login-form" class="login__form">
                 <input type="text" id="username" class="login__input" placeholder="Usuário" required>
                 <input type="password" id="password" class="login__input" placeholder="Senha" required>
-                <button type="submit" class="btn btn--action">Acessar</button>
+                <button type="submit" class="btn btn--action">Acessar Sistema</button>
                 <p id="login-error" class="login__error hidden">Acesso Bloqueado.</p>
             </form>
         </section>
@@ -27,8 +30,14 @@
     <div id="app-view" class="app hidden">
         <header class="header">
             <div class="header__top">
-                <h2 class="header__logo">PORTFÓLIO</h2>
+                <div class="header__brand">
+                    <h2 class="header__logo">PORTFÓLIO</h2>
+                </div>
                 <div class="header__controls">
+                    <div class="header__profile">
+                        <img id="user-avatar" class="header__avatar" src="" alt="Avatar">
+                        <span id="user-name" class="header__username"></span>
+                    </div>
                     <button id="btn-theme" class="btn btn--text">🌓</button>
                     <button id="btn-menu-toggle" class="btn btn--text header__hamburger">☰</button>
                 </div>
@@ -50,7 +59,7 @@
             </section>
             
             <section class="showcase">
-                <h2 class="showcase__title">Publicações</h2>
+                <h2 class="showcase__title">Painel de Publicações</h2>
                 <div id="project-grid" class="showcase__grid"></div>
             </section>
         </main>
@@ -77,6 +86,31 @@
                 <h2 id="form-title" class="editor__title">Configuração de Projeto</h2>
                 <form id="project-form" class="editor__form">
                     <input type="text" id="proj-title" class="editor__input" placeholder="Título" required>
+                    
+                    <div class="editor__row">
+                        <input type="number" id="proj-year" class="editor__input" placeholder="Ano (ex: 2024)" required>
+                        <select id="proj-month" class="editor__input" required>
+                            <option value="Janeiro">Janeiro</option>
+                            <option value="Fevereiro">Fevereiro</option>
+                            <option value="Março">Março</option>
+                            <option value="Abril">Abril</option>
+                            <option value="Maio">Maio</option>
+                            <option value="Junho">Junho</option>
+                            <option value="Julho">Julho</option>
+                            <option value="Agosto">Agosto</option>
+                            <option value="Setembro">Setembro</option>
+                            <option value="Outubro">Outubro</option>
+                            <option value="Novembro">Novembro</option>
+                            <option value="Dezembro">Dezembro</option>
+                        </select>
+                        <select id="proj-category" class="editor__input" required>
+                            <option value="Senac">Senac</option>
+                            <option value="Pessoal">Pessoal</option>
+                            <option value="Corporativo">Corporativo</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+
                     <input type="file" id="proj-files" class="editor__input" accept="image/*" multiple>
                     <input type="text" id="proj-summary" class="editor__input" placeholder="Resumo" required>
                     <textarea id="proj-content" class="editor__textarea" placeholder="Conteúdo completo..." required></textarea>
@@ -98,6 +132,7 @@
                     </div>
                 </div>
                 <div class="detail__header">
+                    <div id="detail-meta" class="detail__meta"></div>
                     <h1 id="detail-title" class="detail__title"></h1>
                     <p id="detail-summary" class="detail__summary"></p>
                 </div>
