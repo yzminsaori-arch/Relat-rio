@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Relatórios - Elite</title>
+    <title>Relatório de Estágio_CEEPSTI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -44,6 +44,7 @@
             </div>
             <nav id="mobile-menu" class="header__nav hidden">
                 <button id="btn-home" class="btn btn--nav">Início</button>
+                <button id="btn-report" class="btn btn--nav btn--pinned">⭐ Relatório</button>
                 <button id="btn-drafts" class="btn btn--nav admin-only hidden">Rascunhos</button>
                 <button id="btn-edit-report" class="btn btn--nav admin-only hidden">Editar Relatório</button>
                 <button id="btn-create" class="btn btn--nav admin-only hidden">Novo Projeto</button>
@@ -53,15 +54,20 @@
         </header>
 
         <main id="home-view" class="view">
-            <section class="hero">
-                <h1 class="hero__title">RELATÓRIO</h1>
-                <div id="main-report-content" class="hero__content"></div>
-            </section>
-            
             <section class="showcase">
                 <h2 class="showcase__title">Painel de Publicações</h2>
                 <div id="project-grid" class="showcase__grid"></div>
             </section>
+        </main>
+
+        <main id="report-view" class="view hidden">
+            <article class="report-display">
+                <div class="report-display__header">
+                    <span class="report-display__icon">⭐</span>
+                    <h1 class="report-display__title">Relatório de Estágio</h1>
+                </div>
+                <div id="main-report-content" class="report-display__content"></div>
+            </article>
         </main>
 
         <main id="drafts-view" class="view hidden">
@@ -73,10 +79,10 @@
 
         <main id="report-edit-view" class="view hidden">
             <section class="editor">
-                <h2 class="editor__title">Relatório Geral</h2>
+                <h2 class="editor__title">Editar Relatório</h2>
                 <form id="report-form" class="editor__form">
                     <textarea id="main-report-input" class="editor__textarea" required></textarea>
-                    <button type="submit" class="btn btn--action">Atualizar</button>
+                    <button type="submit" class="btn btn--action">Atualizar Relatório</button>
                 </form>
             </section>
         </main>
