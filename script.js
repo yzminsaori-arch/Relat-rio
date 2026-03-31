@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const draftsGrid = document.getElementById('drafts-grid');
     const catalogNav = document.getElementById('catalog-nav');
     const projectForm = document.getElementById('project-form');
-    const btnSaveDraft = document.getElementById('btn-save-draft');
     const reportForm = document.getElementById('report-form');
 
     const carousel = document.getElementById('carousel');
@@ -41,12 +40,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const lightboxImg = document.getElementById('lightbox-img');
     const btnLightboxClose = document.getElementById('btn-lightbox-close');
 
-    let projects = JSON.parse(localStorage.getItem('multi_portfolio_data')) || [];
-    let mainReport = localStorage.getItem('multi_main_report') || 'Relatório central vazio.';
+    const userAvatar = document.getElementById('user-avatar');
+    const userName = document.getElementById('user-name');
+
+    let projects = JSON.parse(localStorage.getItem('elite_portfolio_data')) || [];
+    let mainReport = localStorage.getItem('elite_main_report') || 'Relatório central vazio.';
     let currentAdminStatus = false;
     let editingProjectId = null;
     let currentViewingProject = null;
     let currentImageIndex = 0;
+
+    const avatars = {
+        admin: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop",
+        cliente: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&auto=format&fit=crop"
+    };
 
     function switchView(viewName) {
         Object.values(views).forEach(v => v.classList.add('hidden'));
@@ -61,12 +68,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const cover = proj.files && proj.files.length > 0 
             ? `<img src="${proj.files[0]}" class="card__image">` 
             : `<div class="card__image" style="display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--color-text-mut);">SEM ANEXO</div>`;
-        const badge = proj.status === 'draft' ? `<span class="card__badge">RASCUNHO</span>` : '';
+        const badgeDraft = proj.status === 'draft' ? `<span class="card__badge">RASCUNHO</span>` : '';
         
         return `
             ${cover}
             <div class="card__content">
-                ${badge}
+                <div class="card__meta">
+                    ${badgeDraft}
+                    <span class="card__badge">${proj.month}/${proj.year}</span>
+                    <span class="card__badge card__badge--cat">${proj.category}</span>
+                </div>
                 <h3 class="card__title">${proj.title}</h3>
                 <p class="card__summary">${proj.summary}</p>
             </div>
@@ -126,6 +137,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('detail-summary').textContent = proj.summary;
         document.getElementById('detail-body').textContent = proj.content;
         
+        const metaContainer = document.getElementById('detail-meta');
+        metaContainer.innerHTML = `
+            <span class="card__badge">${proj.month}/${proj.year}</span>
+            <span class="card__badge card__badge--cat">${proj.category}</span>
+        `;
+        
         currentImageIndex = 0;
         updateCarousel();
         
@@ -140,6 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const projData = {
                 id: editingProjectId || Date.now(),
                 title: document.getElementById('proj-title').value,
+                year: document.getElementById('proj-year').value,
+                month: document.getElementById('proj-month').value,
+                category: document.getElementById('proj-category').value,
                 files: base64Files.length > 0 ? base64Files : (editingProjectId ? currentViewingProject.files : []),
                 summary: document.getElementById('proj-summary').value,
                 content: document.getElementById('proj-content').value,
@@ -153,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                localStorage.setItem('multi_portfolio_data', JSON.stringify(projects));
+                localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
                 projectForm.reset();
                 editingProjectId = null;
                 renderGrids();
@@ -204,8 +224,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (user === 'admin' && pass === '28765522') {
             currentAdminStatus = true;
+            userName.textContent = "Administrador";
+            userAvatar.src = avatars.admin;
         } else if (user === 'cliente' && pass === '1234567') {
             currentAdminStatus = false;
+            userName.textContent = "Cliente Convidado";
+            userAvatar.src = avatars.cliente;
         } else {
             document.getElementById('login-error').classList.remove('hidden');
             return;
@@ -247,6 +271,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!currentViewingProject) return;
         editingProjectId = currentViewingProject.id;
         document.getElementById('proj-title').value = currentViewingProject.title;
+        document.getElementById('proj-year').value = currentViewingProject.year || '';
+        document.getElementById('proj-month').value = currentViewingProject.month || 'Janeiro';
+        document.getElementById('proj-category').value = currentViewingProject.category || 'Senac';
         document.getElementById('proj-summary').value = currentViewingProject.summary;
         document.getElementById('proj-content').value = currentViewingProject.content;
         document.getElementById('form-title').textContent = "Editar Projeto";
@@ -256,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('btn-delete-proj').addEventListener('click', () => {
         if (!currentViewingProject) return;
         projects = projects.filter(p => p.id !== currentViewingProject.id);
-        localStorage.setItem('multi_portfolio_data', JSON.stringify(projects));
+        localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
         currentViewingProject = null;
         renderGrids();
         switchView('home');
@@ -267,7 +294,7 @@ document.addEventListener("DOMContentLoaded", () => {
         saveProjectData('published');
     });
 
-    btnSaveDraft.addEventListener('click', () => {
+    document.getElementById('btn-save-draft').addEventListener('click', () => {
         if(document.getElementById('proj-title').value === '') return;
         saveProjectData('draft');
     });
@@ -275,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reportForm.addEventListener('submit', (e) => {
         e.preventDefault();
         mainReport = document.getElementById('main-report-input').value;
-        localStorage.setItem('multi_main_report', mainReport);
+        localStorage.setItem('elite_main_report', mainReport);
         renderGrids();
         switchView('home');
     });
