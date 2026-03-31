@@ -51,9 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentViewingProject = null;
     let currentImageIndex = 0;
 
-    const avatars = {
-        admin: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop",
-        cliente: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=100&auto=format&fit=crop"
+   const avatars = {
+        admin: "foto-admin.jpg",
+        cliente: "foto-cliente.jpg"
     };
 
     function switchView(viewName) {
@@ -223,13 +223,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const user = document.getElementById('username').value;
         const pass = document.getElementById('password').value;
 
-        if (user === 'admin' && pass === '28765522') {
+        if (user === 'admin' && pass === '09072223') {
             currentAdminStatus = true;
-            userName.textContent = "Administrador";
+            userName.textContent = "Yasmin_Soares";
             userAvatar.src = avatars.admin;
         } else if (user === 'cliente' && pass === '1234567') {
             currentAdminStatus = false;
-            userName.textContent = "Cliente Convidado";
+            userName.textContent = "Convidado";
             userAvatar.src = avatars.cliente;
         } else {
             document.getElementById('login-error').classList.remove('hidden');
