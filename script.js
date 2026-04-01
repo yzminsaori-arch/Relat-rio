@@ -10,9 +10,18 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const loginView = document.getElementById('login-view');
+    const forgotView = document.getElementById('forgot-view');
     const appView = document.getElementById('app-view');
-    const loginForm = document.getElementById('login-form');
     
+    const loginForm = document.getElementById('login-form');
+    const forgotForm = document.getElementById('forgot-form');
+    const btnForgotLink = document.getElementById('btn-forgot-link');
+    const btnBackLogin = document.getElementById('btn-back-login');
+    const rememberMeCheck = document.getElementById('remember-me');
+    
+    const inputUser = document.getElementById('username');
+    const inputPass = document.getElementById('password');
+
     const menuToggle = document.getElementById('btn-menu-toggle');
     const mobileMenu = document.getElementById('mobile-menu');
     
@@ -54,7 +63,15 @@ document.addEventListener("DOMContentLoaded", () => {
     let currentViewingProject = null;
     let currentImageIndex = 0;
 
-    // Motor de Compressão de Imagens (Bypass do Limite do Navegador)
+    const savedUser = localStorage.getItem('elite_saved_user');
+    const savedPass = localStorage.getItem('elite_saved_pass');
+    
+    if (savedUser && savedPass) {
+        inputUser.value = savedUser;
+        inputPass.value = savedPass;
+        rememberMeCheck.checked = true;
+    }
+
     function compressImage(base64Str, maxWidth, callback) {
         const img = new Image();
         img.src = base64Str;
@@ -72,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            callback(canvas.toDataURL('image/jpeg', 0.7)); // Qualidade 70%
+            callback(canvas.toDataURL('image/jpeg', 0.7)); 
         };
     }
 
@@ -194,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
+                localStorage.setItem('portfolio_data', JSON.stringify(projects));
                 projectForm.reset();
                 editingProjectId = null;
                 renderGrids();
@@ -227,14 +244,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Sistema de Troca de Foto de Perfil
-    btnChangeAvatar.addEventListener('click', () => {
-        avatarUpload.click();
-    });
-
-    userAvatar.addEventListener('click', () => {
-        avatarUpload.click();
-    });
+    btnChangeAvatar.addEventListener('click', () => avatarUpload.click());
+    userAvatar.addEventListener('click', () => avatarUpload.click());
 
     avatarUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -274,10 +285,42 @@ document.addEventListener("DOMContentLoaded", () => {
         lightboxImg.src = "";
     });
 
+    btnForgotLink.addEventListener('click', () => {
+        loginView.classList.add('hidden');
+        forgotView.classList.remove('hidden');
+        document.getElementById('forgot-message').classList.add('hidden');
+        forgotForm.reset();
+    });
+
+    btnBackLogin.addEventListener('click', () => {
+        forgotView.classList.add('hidden');
+        loginView.classList.remove('hidden');
+    });
+
+    forgotForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const rawCpf = document.getElementById('recovery-cpf').value;
+        const cleanCpf = rawCpf.replace(/\D/g, ''); 
+        const messageEl = document.getElementById('forgot-message');
+        
+        messageEl.classList.remove('hidden');
+        
+        if (cleanCpf === '99022348512') {
+            messageEl.style.color = 'var(--color-success)';
+            messageEl.textContent = 'Usuário localizado. Sua senha é: 09072223';
+        } else if (cleanCpf === '10024543132') {
+            messageEl.style.color = 'var(--color-success)';
+            messageEl.textContent = 'Usuário localizado. Sua senha é: 22678452';
+        } else {
+            messageEl.style.color = 'var(--color-danger)';
+            messageEl.textContent = 'CPF não consta no banco de dados.';
+        }
+    });
+
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
+        const user = inputUser.value;
+        const pass = inputPass.value;
 
         if (user === 'admin' && pass === '09072223') {
             currentAdminStatus = true;
@@ -285,15 +328,23 @@ document.addEventListener("DOMContentLoaded", () => {
             userName.textContent = "Yasmin_Soares";
         } else if (user === 'cliente' && pass === '1234567') {
             currentAdminStatus = false;
-            currentActiveRole = 'cliente';
-            userName.textContent = "Cliente Convidado";
+            currentActiveRole = 'usuario';
+            userName.textContent = "Convidado";
         } else {
             document.getElementById('login-error').classList.remove('hidden');
             return;
         }
 
-        const savedAvatar = localStorage.getItem(`elite_avatar_${currentActiveRole}`);
-        userAvatar.src = savedAvatar || `https://ui-avatars.com/api/?name=${currentActiveRole}&background=ff1493&color=fff`;
+        if (rememberMeCheck.checked) {
+            localStorage.setItem('elite_saved_user', user);
+            localStorage.setItem('elite_saved_pass', pass);
+        } else {
+            localStorage.removeItem('elite_saved_user');
+            localStorage.removeItem('elite_saved_pass');
+        }
+
+        const avatarDb = localStorage.getItem(`elite_avatar_${currentActiveRole}`);
+        userAvatar.src = avatarDb || `https://ui-avatars.com/api/?name=${currentActiveRole}&background=ff1493&color=fff`;
 
         document.querySelectorAll('.admin-only').forEach(el => {
             currentAdminStatus ? el.classList.remove('hidden') : el.classList.add('hidden');
@@ -311,7 +362,11 @@ document.addEventListener("DOMContentLoaded", () => {
         appView.classList.add('hidden');
         loginView.classList.remove('hidden');
         if (window.innerWidth < 768) mobileMenu.classList.add('hidden');
-        loginForm.reset();
+        
+        if (!rememberMeCheck.checked) {
+            inputUser.value = '';
+            inputPass.value = '';
+        }
         document.getElementById('login-error').classList.add('hidden');
     });
 
