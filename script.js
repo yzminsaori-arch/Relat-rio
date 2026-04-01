@@ -42,6 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnLightboxClose = document.getElementById('btn-lightbox-close');
 
     const userAvatar = document.getElementById('user-avatar');
+    const btnChangeAvatar = document.getElementById('btn-change-avatar');
     const userName = document.getElementById('user-name');
     const avatarUpload = document.getElementById('avatar-upload');
 
@@ -52,6 +53,28 @@ document.addEventListener("DOMContentLoaded", () => {
     let editingProjectId = null;
     let currentViewingProject = null;
     let currentImageIndex = 0;
+
+    // Motor de Compressão de Imagens (Bypass do Limite do Navegador)
+    function compressImage(base64Str, maxWidth, callback) {
+        const img = new Image();
+        img.src = base64Str;
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            callback(canvas.toDataURL('image/jpeg', 0.7)); // Qualidade 70%
+        };
+    }
 
     function switchView(viewName) {
         Object.values(views).forEach(v => v.classList.add('hidden'));
@@ -151,14 +174,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const fileInput = document.getElementById('proj-files');
         const filesArray = Array.from(fileInput.files);
         
-        const processSave = (base64Files) => {
+        const processSave = (compressedFiles) => {
             const projData = {
                 id: editingProjectId || Date.now(),
                 title: document.getElementById('proj-title').value,
                 year: document.getElementById('proj-year').value,
                 month: document.getElementById('proj-month').value,
                 category: document.getElementById('proj-category').value,
-                files: base64Files.length > 0 ? base64Files : (editingProjectId ? currentViewingProject.files : []),
+                files: compressedFiles.length > 0 ? compressedFiles : (editingProjectId ? currentViewingProject.files : []),
                 summary: document.getElementById('proj-summary').value,
                 content: document.getElementById('proj-content').value,
                 status: status
@@ -177,23 +200,37 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderGrids();
                 switchView(status === 'published' ? 'home' : 'drafts');
             } catch (error) {
-                alert("OVERFLOW: Limite de 5MB atingido. Remova arquivos grandes.");
+                alert("Erro crítico: A memória do seu navegador está completamente cheia. O sistema foi forçado a interromper a gravação.");
                 if (!editingProjectId) projects.shift();
             }
         };
 
         if (filesArray.length > 0) {
-            Promise.all(filesArray.map(file => {
-                return new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onload = e => resolve(e.target.result);
-                    reader.readAsDataURL(file);
-                });
-            })).then(processSave);
+            let processedFiles = [];
+            let filesProcessed = 0;
+
+            filesArray.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    compressImage(e.target.result, 1000, (compressedBase64) => {
+                        processedFiles[index] = compressedBase64;
+                        filesProcessed++;
+                        if (filesProcessed === filesArray.length) {
+                            processSave(processedFiles);
+                        }
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
         } else {
             processSave([]);
         }
     }
+
+    // Sistema de Troca de Foto de Perfil
+    btnChangeAvatar.addEventListener('click', () => {
+        avatarUpload.click();
+    });
 
     userAvatar.addEventListener('click', () => {
         avatarUpload.click();
@@ -204,13 +241,14 @@ document.addEventListener("DOMContentLoaded", () => {
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const base64 = event.target.result;
-                userAvatar.src = base64;
-                try {
-                    localStorage.setItem(`elite_avatar_${currentActiveRole}`, base64);
-                } catch (error) {
-                    alert("A imagem de perfil excede o limite de memória. Escolha uma imagem menor.");
-                }
+                compressImage(event.target.result, 300, (compressedBase64) => {
+                    userAvatar.src = compressedBase64;
+                    try {
+                        localStorage.setItem(`elite_avatar_${currentActiveRole}`, compressedBase64);
+                    } catch (error) {
+                        alert("Falha ao salvar avatar. A memória do navegador está lotada.");
+                    }
+                });
             };
             reader.readAsDataURL(file);
         }
