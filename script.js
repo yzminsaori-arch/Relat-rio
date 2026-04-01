@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const userName = document.getElementById('user-name');
     const avatarUpload = document.getElementById('avatar-upload');
 
-    // Variáveis do Módulo de Interação (Curtir/Resenha)
     const btnLike = document.getElementById('btn-like');
     const likeCounter = document.getElementById('like-counter');
     const reviewForm = document.getElementById('review-form');
@@ -369,6 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
         loginView.classList.remove('hidden');
     });
 
+    // MÓDULO DE VERIFICAÇÃO DE CPF
     forgotForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const rawCpf = document.getElementById('recovery-cpf').value;
@@ -389,6 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    // MÓDULO DE LOGIN
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const user = inputUser.value;
@@ -398,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
             currentAdminStatus = true;
             currentActiveRole = 'admin';
             userName.textContent = "Yasmin_Soares";
-        } else if (user === 'cliente' && pass === '1234567') {
+        } else if (user === 'cliente' && pass === '22678452') { // SENHA DO CLIENTE SINCRONIZADA
             currentAdminStatus = false;
             currentActiveRole = 'usuario';
             userName.textContent = "Convidado";
