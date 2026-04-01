@@ -55,6 +55,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const userName = document.getElementById('user-name');
     const avatarUpload = document.getElementById('avatar-upload');
 
+    // Variáveis do Módulo de Interação (Curtir/Resenha)
+    const btnLike = document.getElementById('btn-like');
+    const likeCounter = document.getElementById('like-counter');
+    const reviewForm = document.getElementById('review-form');
+    const reviewInput = document.getElementById('review-input');
+    const reviewsList = document.getElementById('reviews-list');
+
     let projects = JSON.parse(localStorage.getItem('elite_portfolio_data')) || [];
     let mainReport = localStorage.getItem('elite_main_report') || 'Relatório central vazio.';
     let currentAdminStatus = false;
@@ -107,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ? `<img src="${proj.files[0]}" class="card__image">` 
             : `<div class="card__image" style="display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--color-text-mut);">SEM ANEXO</div>`;
         const badgeDraft = proj.status === 'draft' ? `<span class="card__badge">RASCUNHO</span>` : '';
+        const likesBadge = `<span class="card__badge" style="background:var(--color-surface-alt); color:var(--color-text);">❤️ ${proj.likes || 0}</span>`;
         
         return `
             ${cover}
@@ -115,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${badgeDraft}
                     <span class="card__badge">${proj.month}/${proj.year}</span>
                     <span class="card__badge card__badge--cat">${proj.category}</span>
+                    ${likesBadge}
                 </div>
                 <h3 class="card__title">${proj.title}</h3>
                 <p class="card__summary">${proj.summary}</p>
@@ -169,8 +178,35 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function renderReviews() {
+        reviewsList.innerHTML = '';
+        const reviews = currentViewingProject.reviews || [];
+        
+        if (reviews.length === 0) {
+            reviewsList.innerHTML = '<p style="color: var(--color-text-mut); font-style: italic;">Nenhuma resenha publicada ainda. Seja o primeiro!</p>';
+            return;
+        }
+
+        reviews.forEach(rev => {
+            const card = document.createElement('div');
+            card.classList.add('review-card');
+            card.innerHTML = `
+                <div class="review-header">
+                    <span class="review-author">${rev.author}</span>
+                    <span class="review-date">${rev.date}</span>
+                </div>
+                <p class="review-text">${rev.text}</p>
+            `;
+            reviewsList.appendChild(card);
+        });
+    }
+
     function openProject(proj) {
         currentViewingProject = proj;
+        
+        if (!currentViewingProject.likes) currentViewingProject.likes = 0;
+        if (!currentViewingProject.reviews) currentViewingProject.reviews = [];
+
         document.getElementById('detail-title').textContent = proj.title;
         document.getElementById('detail-summary').textContent = proj.summary;
         document.getElementById('detail-body').textContent = proj.content;
@@ -181,11 +217,45 @@ document.addEventListener("DOMContentLoaded", () => {
             <span class="card__badge card__badge--cat">${proj.category}</span>
         `;
         
+        likeCounter.textContent = `(${currentViewingProject.likes})`;
+        renderReviews();
+
         currentImageIndex = 0;
         updateCarousel();
         
         switchView('detail');
     }
+
+    btnLike.addEventListener('click', () => {
+        if (!currentViewingProject) return;
+        currentViewingProject.likes = (currentViewingProject.likes || 0) + 1;
+        
+        projects = projects.map(p => p.id === currentViewingProject.id ? currentViewingProject : p);
+        localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
+        
+        likeCounter.textContent = `(${currentViewingProject.likes})`;
+        renderGrids();
+    });
+
+    reviewForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!currentViewingProject) return;
+
+        const newReview = {
+            author: userName.textContent,
+            date: new Date().toLocaleDateString('pt-BR'),
+            text: reviewInput.value
+        };
+
+        if (!currentViewingProject.reviews) currentViewingProject.reviews = [];
+        currentViewingProject.reviews.push(newReview);
+
+        projects = projects.map(p => p.id === currentViewingProject.id ? currentViewingProject : p);
+        localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
+
+        reviewForm.reset();
+        renderReviews();
+    });
 
     function saveProjectData(status) {
         const fileInput = document.getElementById('proj-files');
@@ -201,6 +271,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 files: compressedFiles.length > 0 ? compressedFiles : (editingProjectId ? currentViewingProject.files : []),
                 summary: document.getElementById('proj-summary').value,
                 content: document.getElementById('proj-content').value,
+                likes: editingProjectId && currentViewingProject ? currentViewingProject.likes : 0,
+                reviews: editingProjectId && currentViewingProject ? currentViewingProject.reviews : [],
                 status: status
             };
 
@@ -211,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             try {
-                localStorage.setItem('portfolio_data', JSON.stringify(projects));
+                localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
                 projectForm.reset();
                 editingProjectId = null;
                 renderGrids();
