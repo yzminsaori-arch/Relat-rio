@@ -72,7 +72,7 @@
             </div>
             <nav id="mobile-menu" class="header__nav hidden">
                 <button id="btn-home" class="btn btn--nav">Início</button>
-                <button id="btn-report" class="btn btn--nav btn--pinned">★ Relatório</button>
+                <button id="btn-report" class="btn btn--nav btn--pinned">⭐ Relatório</button>
                 <button id="btn-drafts" class="btn btn--nav admin-only hidden">Rascunhos</button>
                 <button id="btn-edit-report" class="btn btn--nav admin-only hidden">Editar Relatório</button>
                 <button id="btn-create" class="btn btn--nav admin-only hidden">Novo Projeto</button>
@@ -91,7 +91,7 @@
         <main id="report-view" class="view hidden">
             <article class="report-display">
                 <div class="report-display__header">
-                    <span class="report-display__icon">★</span>
+                    <span class="report-display__icon">⭐</span>
                     <h1 class="report-display__title">Relatório Geral de Estágio</h1>
                 </div>
                 <div id="main-report-content" class="report-display__content"></div>
@@ -181,6 +181,19 @@
                 </div>
 
                 <div id="detail-body" class="detail__body"></div>
+
+                <div class="detail__interaction">
+                    <button id="btn-like" class="btn btn--secondary" style="width: auto;">❤️ Curtir <span id="like-counter">(0)</span></button>
+                </div>
+
+                <div class="detail__reviews">
+                    <h3 class="detail__reviews-title">Resenhas do Projeto</h3>
+                    <div id="reviews-list" class="reviews-list"></div>
+                    <form id="review-form" class="review-form">
+                        <textarea id="review-input" class="editor__textarea" placeholder="Deixe sua opinião sobre este trabalho..." required></textarea>
+                        <button type="submit" class="btn btn--action">Publicar Resenha</button>
+                    </form>
+                </div>
             </article>
         </main>
     </div>
