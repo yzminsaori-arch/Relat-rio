@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Relatórios - Elite</title>
+    <title>Relatório de Estágio</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,15 +14,39 @@
 
     <main id="login-view" class="login">
         <div class="login__cover">
-            <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop" alt="Capa" class="login__cover-img">
+            <img src="relatorio-foto.jpg" alt="Capa" class="login__cover-img">
         </div>
         <section class="login__box">
             <h1 class="login__title">SISTEMA</h1>
             <form id="login-form" class="login__form">
                 <input type="text" id="username" class="login__input" placeholder="Usuário" required>
                 <input type="password" id="password" class="login__input" placeholder="Senha" required>
+                
+                <div class="login__options">
+                    <label class="login__remember">
+                        <input type="checkbox" id="remember-me"> Lembrar acesso
+                    </label>
+                    <button type="button" id="btn-forgot-link" class="login__forgot">Esqueci a senha</button>
+                </div>
+
                 <button type="submit" class="btn btn--action">Acessar Sistema</button>
                 <p id="login-error" class="login__error hidden">Acesso Bloqueado.</p>
+            </form>
+        </section>
+    </main>
+
+    <main id="forgot-view" class="login hidden">
+        <div class="login__cover">
+            <img src="relatorio-foto.jpg" alt="Capa" class="login__cover-img">
+        </div>
+        <section class="login__box">
+            <h1 class="login__title">RECUPERAÇÃO</h1>
+            <form id="forgot-form" class="login__form">
+                <p class="login__desc">Insira seu CPF cadastrado para recuperar as credenciais de acesso.</p>
+                <input type="text" id="recovery-cpf" class="login__input" placeholder="000.000.000-00" required>
+                <button type="submit" class="btn btn--action">Verificar Documento</button>
+                <button type="button" id="btn-back-login" class="btn btn--secondary mt-1">Voltar ao Login</button>
+                <p id="forgot-message" class="login__message hidden"></p>
             </form>
         </section>
     </main>
@@ -36,7 +60,10 @@
                 <div class="header__controls">
                     <div class="header__profile">
                         <input type="file" id="avatar-upload" class="hidden" accept="image/*">
-                        <img id="user-avatar" class="header__avatar" src="" alt="Avatar">
+                        <div class="avatar-wrapper">
+                            <img id="user-avatar" class="header__avatar" src="" alt="Avatar">
+                            <button id="btn-change-avatar" class="btn-avatar-edit">Trocar Foto</button>
+                        </div>
                         <span id="user-name" class="header__username"></span>
                     </div>
                     <button id="btn-theme" class="btn btn--text">🌓</button>
@@ -45,7 +72,7 @@
             </div>
             <nav id="mobile-menu" class="header__nav hidden">
                 <button id="btn-home" class="btn btn--nav">Início</button>
-                <button id="btn-report" class="btn btn--nav btn--pinned">⭐ Relatório</button>
+                <button id="btn-report" class="btn btn--nav btn--pinned">★ Relatório</button>
                 <button id="btn-drafts" class="btn btn--nav admin-only hidden">Rascunhos</button>
                 <button id="btn-edit-report" class="btn btn--nav admin-only hidden">Editar Relatório</button>
                 <button id="btn-create" class="btn btn--nav admin-only hidden">Novo Projeto</button>
@@ -64,7 +91,7 @@
         <main id="report-view" class="view hidden">
             <article class="report-display">
                 <div class="report-display__header">
-                    <span class="report-display__icon">⭐</span>
+                    <span class="report-display__icon">★</span>
                     <h1 class="report-display__title">Relatório Geral de Estágio</h1>
                 </div>
                 <div id="main-report-content" class="report-display__content"></div>
