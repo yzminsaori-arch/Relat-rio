@@ -3,127 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Portfólio de Elite</title>
+    <title>Svetlana OS | Elite Interface</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="animated-bg"></div>
+    <div class="glass-bg"></div>
 
-    <div id="lightbox" class="lightbox hidden">
-        <button id="btn-lightbox-close" class="lightbox__close">×</button>
-        <img id="lightbox-img" class="lightbox__img" src="" alt="Imagem ampliada">
-    </div>
-
-    <div id="login-view" class="auth-view" role="main">
-        <section class="glass-box">
-            <h1 class="auth-title">SISTEMA</h1>
-            <form id="login-form" class="auth-form" novalidate>
-                <input type="text" id="username" name="username" class="auth-input"
-                       placeholder="Usuário" autocomplete="username" required
-                       aria-label="Nome de usuário">
-                <input type="password" id="password" name="password" class="auth-input"
-                       placeholder="Senha" autocomplete="current-password" required
-                       aria-label="Senha">
-                <div class="auth-options">
-                    <label class="remember-me" for="remember-me">
-                        <input type="checkbox" id="remember-me"> Lembrar acesso
-                    </label>
-                    <button type="button" id="btn-forgot-link" class="link-btn">Esqueci a senha</button>
+    <main id="auth-container" class="auth-container">
+        <section id="login-view" class="glass-card fadeIn">
+            <h1 class="glass-card__title">SISTEMA</h1>
+            <form id="login-form" class="glass-form">
+                <div class="input-group">
+                    <input type="text" id="username" required placeholder=" ">
+                    <label>Usuário</label>
                 </div>
-                <button type="submit" class="btn-primary">Acessar Sistema</button>
-                <div class="register-link">
-                    <p>Novo aqui? <button type="button" id="go-to-register" class="link-btn">Criar Conta</button></p>
+                <div class="input-group">
+                    <input type="password" id="password" required placeholder=" ">
+                    <label>Senha</label>
                 </div>
-                <p id="login-error" class="error-msg hidden" role="alert" aria-live="assertive">
-                    Usuário ou senha incorretos.
-                </p>
+                <button type="submit" class="btn-elite">ACESSAR</button>
+                <div class="glass-form__footer">
+                    <button type="button" id="go-to-register" class="link-btn">Criar Conta</button>
+                </div>
+                <p id="login-error" class="error-msg hidden">Acesso Negado: Credenciais Inválidas</p>
             </form>
         </section>
-    </div>
 
-    <div id="register-view" class="auth-view hidden">
-        <section class="glass-box">
-            <h1 class="auth-title">CADASTRO</h1>
-            <form id="register-form" class="auth-form" novalidate>
-                <input type="text" id="reg-username" name="username" class="auth-input"
-                       placeholder="Usuário" autocomplete="username" required
-                       aria-label="Nome de usuário">
-                <input type="text" id="reg-name" name="name" class="auth-input"
-                       placeholder="Seu nome completo" autocomplete="name" required
-                       aria-label="Nome completo">
-                <input type="password" id="reg-password" name="password" class="auth-input"
-                       placeholder="Senha" autocomplete="new-password" required
-                       aria-label="Senha">
-                <input type="text" id="reg-cpf" name="cpf" class="auth-input"
-                       placeholder="CPF (somente números)" maxlength="11"
-                       inputmode="numeric" pattern="\d{11}"
-                       aria-label="CPF" required>
-                <button type="submit" class="btn-primary">Finalizar Cadastro</button>
-                <button type="button" id="back-to-login" class="link-btn mt-1">Voltar ao Login</button>
+        <section id="register-view" class="glass-card hidden fadeIn">
+            <h1 class="glass-card__title">CADASTRO</h1>
+            <form id="register-form" class="glass-form">
+                <div class="input-group"><input type="text" id="reg-username" required placeholder=" "><label>Usuário</label></div>
+                <div class="input-group"><input type="password" id="reg-password" required placeholder=" "><label>Senha</label></div>
+                <button type="submit" class="btn-elite">FINALIZAR</button>
+                <button type="button" id="back-to-login" class="link-btn">Voltar</button>
             </form>
         </section>
-    </div>
+    </main>
 
-    <div id="app-view" class="app hidden">
-        <header class="header" role="banner">
-            <div class="header__top">
-                <h2 class="header__logo">PORTFÓLIO</h2>
-                <div class="header__controls">
-                    <div class="header__profile">
-                        <img id="user-avatar" class="header__avatar"
-                             src="https://ui-avatars.com/api/?name=User"
-                             alt="Avatar do usuário">
-                        <span id="user-display-name" class="header__username" aria-label="Usuário logado"></span>
-                    </div>
-                    <button id="btn-logout" class="btn-logout" type="button">Sair</button>
-                </div>
-            </div>
-            <nav class="header__nav" aria-label="Navegação principal">
-                <button id="nav-home" class="nav-link" type="button">Início</button>
-                <button id="nav-report" class="nav-link" type="button">Relatório</button>
-                <button id="nav-create" class="nav-link admin-only hidden" type="button">Novo Projeto</button>
-            </nav>
+    <div id="app-view" class="app-shell hidden">
+        <header class="glass-header">
+            <h2>SVETLANA.SYS</h2>
+            <button id="btn-logout" class="btn-logout">EXIT</button>
         </header>
-
-        <main id="app-main" class="app-main">
-
-            <section id="home-view" class="view" aria-label="Lista de projetos">
-                <div id="project-grid" class="showcase__grid"></div>
-            </section>
-
-            <section id="detail-view" class="view hidden" aria-label="Detalhe do projeto">
-                <article class="detail-card">
-                    <button id="btn-back-home" class="btn-secondary" type="button">← Voltar</button>
-                    <h1 id="detail-title"></h1>
-                    <p id="detail-body"></p>
-                    <p class="detail-author">
-                        Por: <span id="detail-author"></span>
-                    </p>
-                    <div class="interaction">
-                        <button id="btn-like" class="btn-like" type="button"
-                                aria-label="Curtir projeto">
-                            ❤️ Curtir <span id="like-count">(0)</span>
-                        </button>
-                    </div>
-                </article>
-            </section>
-
-            <section id="form-view" class="view hidden" aria-label="Criar novo projeto">
-                <div class="glass-box">
-                    <h2>Novo Projeto</h2>
-                    <form id="project-form" class="auth-form" novalidate>
-                        <input type="text" id="proj-title" class="auth-input"
-                               placeholder="Título do projeto" required
-                               aria-label="Título do projeto">
-                        <textarea id="proj-content" class="auth-input"
-                                  placeholder="Descreva o projeto..."
-                                  rows="5" aria-label="Conteúdo do projeto"></textarea>
-                        <button type="submit" class="btn-primary">Publicar</button>
-                    </form>
-                </div>
-            </section>
-
-        </main>
+        <div id="project-grid" class="grid-layout"></div>
     </div>
 
     <script src="script.js"></script>
