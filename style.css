@@ -1,5 +1,3 @@
-/* CORREÇÃO 5 (Bug): CSS duplicado removido — cada regra aparece apenas uma vez. */
-
 :root {
     --accent: #ffffff;
     --glass: rgba(255, 255, 255, 0.1);
@@ -24,9 +22,8 @@ body {
 .animated-bg {
     position: fixed;
     inset: 0;
-    background: url('img/img.jpg') center/cover no-repeat;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     z-index: -1;
-    filter: brightness(0.4);
     animation: bgMove 20s infinite alternate ease-in-out;
 }
 
