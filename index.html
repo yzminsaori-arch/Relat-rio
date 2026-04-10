@@ -1,211 +1,140 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatório de Estágio</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="lightbox" class="lightbox hidden">
-        <button id="btn-lightbox-close" class="lightbox__close">×</button>
-        <img id="lightbox-img" class="lightbox__img" src="" alt="">
-    </div>
+document.addEventListener("DOMContentLoaded", () => {
+    const state = {
+        projects: JSON.parse(localStorage.getItem('elite_projects')) || [],
+        users: JSON.parse(localStorage.getItem('elite_users')) || [
+            {user: 'admin', pass: '09072223', role: 'admin', name: 'Yasmin', email: 'yasminqsabe@gmail.com'}
+        ],
+        currentUser: null,
+        likes: JSON.parse(localStorage.getItem('elite_likes')) || {}
+    };
 
-<div class="animated-bg"></div>
+    const views = {
+        login: document.getElementById('login-view'),
+        register: document.getElementById('register-view'),
+        app: document.getElementById('app-view'),
+        home: document.getElementById('home-view'),
+        form: document.getElementById('form-view'),
+        detail: document.getElementById('detail-view')
+    };
 
-<main id="login-view" class="auth-container">
-    <section class="glass-box">
-        <h1 class="auth-title">SISTEMA</h1>
-        <form id="login-form" class="auth-form">
-            <div class="input-group">
-                <input type="text" id="username" class="auth-input" placeholder="Usuário" required>
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" class="auth-input" placeholder="Senha" required>
-            </div>
+    function showView(viewName) {
+        Object.values(views).forEach(v => v?.classList.add('hidden'));
+        views[viewName]?.classList.remove('hidden');
+    }
+
+    // --- LÓGICA DE RECUPERAÇÃO DE SENHA (RESEND) ---
+    document.getElementById('btn-forgot-link').onclick = async () => {
+        const username = document.getElementById('username').value;
+        if (!username) return alert("Digite seu usuário no campo para recuperar a senha.");
+
+        const foundUser = state.users.find(u => u.user === username);
+        if (!foundUser) return alert("Usuário não encontrado.");
+
+        // Simulando a chamada para o seu backend que usa o código Java/Resend
+        try {
+            alert(`Solicitando recuperação para o usuário: ${username}...`);
             
-            <div class="auth-options">
-                <label class="remember-me">
-                    <input type="checkbox" id="remember-me"> 
-                    <span>Lembrar acesso</span>
-                </label>
-                <button type="button" id="btn-forgot-link" class="link-btn">Esqueci a senha</button>
-            </div>
-
-            <button type="submit" class="btn-primary">Acessar Sistema</button>
+            // Aqui você faria o fetch para o seu servidor
+            /*
+            const response = await fetch('https://seu-servidor.com/recuperar', {
+                method: 'POST',
+                body: JSON.stringify({ email: foundUser.email, pass: foundUser.pass })
+            });
+            */
             
-            <div class="register-link">
-                <p>Não tem uma conta? <button type="button" class="link-btn">Solicitar Acesso</button></p>
-            </div>
-            <p id="login-error" class="error-msg hidden">Acesso Bloqueado.</p>
-        </form>
-    </section>
-</main>
+            // Como estamos em ambiente local, mostramos o resultado:
+            alert(`SUCESSO: E-mail de recuperação enviado para o endereço cadastrado de ${username}!`);
+        } catch (error) {
+            alert("Erro ao conectar com o servidor de e-mail.");
+        }
+    };
 
-    <main id="forgot-view" class="login hidden">
-        <div class="login__cover">
-            <img src="relatorio-foto.jpg" alt="Capa" class="login__cover-img">
-        </div>
-        <section class="login__box">
-            <h1 class="login__title">RECUPERAÇÃO</h1>
-            <form id="forgot-form" class="login__form">
-                <p class="login__desc">Insira seu CPF cadastrado para recuperar as credenciais de acesso.</p>
-                <input type="text" id="recovery-cpf" class="login__input" placeholder="000.000.000-00" required>
-                <button type="submit" class="btn btn--action">Verificar Documento</button>
-                <button type="button" id="btn-back-login" class="btn btn--secondary mt-1">Voltar ao Login</button>
-                <p id="forgot-message" class="login__message hidden"></p>
-            </form>
-        </section>
-    </main>
+    document.getElementById('login-form').onsubmit = (e) => {
+        e.preventDefault();
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const found = state.users.find(x => x.user === u && x.pass === p);
+        if(found) {
+            state.currentUser = found;
+            document.getElementById('user-display-name').textContent = found.name;
+            document.querySelectorAll('.admin-only').forEach(el => {
+                found.role === 'admin' ? el.classList.remove('hidden') : el.classList.add('hidden');
+            });
+            showView('app');
+            showView('home');
+            render();
+        } else {
+            document.getElementById('login-error').classList.remove('hidden');
+        }
+    };
 
-    <div id="app-view" class="app hidden">
-        <header class="header">
-            <div class="header__top">
-                <div class="header__brand">
-                    <h2 class="header__logo">PORTFÓLIO</h2>
-                </div>
-                <div class="header__controls">
-                    <div class="header__profile">
-                        <input type="file" id="avatar-upload" class="hidden" accept="image/*">
-                        <div class="avatar-wrapper">
-                            <img id="user-avatar" class="header__avatar" src="" alt="Avatar">
-                            <button id="btn-change-avatar" class="btn-avatar-edit">Trocar Foto</button>
-                        </div>
-                        <span id="user-name" class="header__username"></span>
-                    </div>
-                    <button id="btn-theme" class="btn btn--text">🌓</button>
-                    <button id="btn-menu-toggle" class="btn btn--text header__hamburger">☰</button>
-                </div>
-            </div>
-            <nav id="mobile-menu" class="header__nav hidden">
-                <button id="btn-home" class="btn btn--nav">Início</button>
-                <button id="btn-report" class="btn btn--nav btn--pinned">⭐ Relatório</button>
-                <button id="btn-drafts" class="btn btn--nav admin-only hidden">Rascunhos</button>
-                <button id="btn-edit-report" class="btn btn--nav admin-only hidden">Editar Relatório</button>
-                <button id="btn-create" class="btn btn--nav admin-only hidden">Novo Projeto</button>
-                <button id="btn-logout" class="btn btn--nav">Sair</button>
-            </nav>
-            <nav id="catalog-nav" class="header__catalog"></nav>
-        </header>
+    document.getElementById('go-to-register').onclick = () => showView('register');
+    document.getElementById('back-to-login').onclick = () => showView('login');
 
-        <main id="home-view" class="view">
-            <section class="showcase">
-                <h2 class="showcase__title">Painel de Publicações</h2>
-                <div id="project-grid" class="showcase__grid"></div>
-            </section>
-        </main>
+    document.getElementById('register-form').onsubmit = (e) => {
+        e.preventDefault();
+        const newUser = {
+            user: document.getElementById('reg-username').value,
+            pass: document.getElementById('reg-password').value,
+            cpf: document.getElementById('reg-cpf').value,
+            role: 'usuario',
+            name: document.getElementById('reg-username').value
+        };
+        state.users.push(newUser);
+        localStorage.setItem('elite_users', JSON.stringify(state.users));
+        alert("Conta criada.");
+        showView('login');
+    };
 
-        <main id="report-view" class="view hidden">
-            <article class="report-display">
-                <div class="report-display__header">
-                    <span class="report-display__icon">⭐</span>
-                    <h1 class="report-display__title">Relatório Geral de Estágio</h1>
-                </div>
-                <div id="main-report-content" class="report-display__content"></div>
-            </article>
-        </main>
+    function render() {
+        const grid = document.getElementById('project-grid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        state.projects.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.innerHTML = `<h3>${p.title}</h3><p>${p.likes || 0} Curtidas</p>`;
+            el.onclick = () => {
+                state.activeProj = p;
+                document.getElementById('detail-title').textContent = p.title;
+                document.getElementById('detail-body').textContent = p.content;
+                document.getElementById('like-count').textContent = `(${p.likes || 0})`;
+                showView('detail');
+            };
+            grid.appendChild(el);
+        });
+    }
 
-        <main id="drafts-view" class="view hidden">
-            <section class="showcase">
-                <h2 class="showcase__title">Rascunhos Salvos</h2>
-                <div id="drafts-grid" class="showcase__grid"></div>
-            </section>
-        </main>
+    document.getElementById('btn-like').onclick = () => {
+        const p = state.activeProj;
+        if (!p || !state.currentUser) return;
+        const u = state.currentUser.user;
+        if(!state.likes[u]) state.likes[u] = [];
+        if(state.likes[u].includes(p.id)) return alert("Já curtiu.");
+        
+        p.likes = (p.likes || 0) + 1;
+        state.likes[u].push(p.id);
+        localStorage.setItem('elite_projects', JSON.stringify(state.projects));
+        localStorage.setItem('elite_likes', JSON.stringify(state.likes));
+        document.getElementById('like-count').textContent = `(${p.likes})`;
+        render();
+    };
 
-        <main id="report-edit-view" class="view hidden">
-            <section class="editor">
-                <h2 class="editor__title">Editar Relatório</h2>
-                <form id="report-form" class="editor__form">
-                    <textarea id="main-report-input" class="editor__textarea" required></textarea>
-                    <button type="submit" class="btn btn--action">Atualizar Relatório</button>
-                </form>
-            </section>
-        </main>
+    document.getElementById('nav-create').onclick = () => showView('form');
+    document.getElementById('nav-home').onclick = () => showView('home');
+    document.getElementById('btn-back-home').onclick = () => showView('home');
+    document.getElementById('btn-logout').onclick = () => location.reload();
 
-        <main id="form-view" class="view hidden">
-            <section class="editor">
-                <h2 id="form-title" class="editor__title">Configuração de Projeto</h2>
-                <form id="project-form" class="editor__form">
-                    <input type="text" id="proj-title" class="editor__input" placeholder="Título" required>
-                    
-                    <div class="editor__row">
-                        <input type="number" id="proj-year" class="editor__input" placeholder="Ano (ex: 2024)" required>
-                        <select id="proj-month" class="editor__input" required>
-                            <option value="Janeiro">Janeiro</option>
-                            <option value="Fevereiro">Fevereiro</option>
-                            <option value="Março">Março</option>
-                            <option value="Abril">Abril</option>
-                            <option value="Maio">Maio</option>
-                            <option value="Junho">Junho</option>
-                            <option value="Julho">Julho</option>
-                            <option value="Agosto">Agosto</option>
-                            <option value="Setembro">Setembro</option>
-                            <option value="Outubro">Outubro</option>
-                            <option value="Novembro">Novembro</option>
-                            <option value="Dezembro">Dezembro</option>
-                        </select>
-                        <select id="proj-category" class="editor__input" required>
-                            <option value="Senac">Senac</option>
-                            <option value="Pessoal">Pessoal</option>
-                            <option value="Corporativo">Corporativo</option>
-                            <option value="Outros">Outros</option>
-                        </select>
-                    </div>
-
-                    <input type="file" id="proj-files" class="editor__input" accept="image/*" multiple>
-                    <input type="text" id="proj-summary" class="editor__input" placeholder="Resumo" required>
-                    <textarea id="proj-content" class="editor__textarea" placeholder="Conteúdo completo..." required></textarea>
-                    <div class="editor__actions">
-                        <button type="button" id="btn-save-draft" class="btn btn--secondary">Salvar Rascunho</button>
-                        <button type="submit" id="btn-publish" class="btn btn--action">Publicar</button>
-                    </div>
-                </form>
-            </section>
-        </main>
-
-        <main id="detail-view" class="view hidden">
-            <article class="detail">
-                <div class="detail__controls">
-                    <button id="btn-back" class="btn btn--secondary">Voltar</button>
-                    <div id="detail-admin-actions" class="detail__actions admin-only hidden">
-                        <button id="btn-edit-proj" class="btn btn--secondary">Editar</button>
-                        <button id="btn-delete-proj" class="btn btn--danger">Excluir</button>
-                    </div>
-                </div>
-                <div class="detail__header">
-                    <div id="detail-meta" class="detail__meta"></div>
-                    <h1 id="detail-title" class="detail__title"></h1>
-                    <p id="detail-summary" class="detail__summary"></p>
-                </div>
-                
-                <div id="carousel" class="carousel hidden">
-                    <div class="carousel__container">
-                        <button id="btn-prev" class="carousel__btn carousel__btn--prev hidden">❮</button>
-                        <img id="carousel-img" class="carousel__img" src="" alt="">
-                        <button id="btn-next" class="carousel__btn carousel__btn--next hidden">❯</button>
-                    </div>
-                    <div id="carousel-indicator" class="carousel__indicator"></div>
-                </div>
-
-                <div id="detail-body" class="detail__body"></div>
-
-                <div class="detail__interaction">
-                    <button id="btn-like" class="btn btn--secondary" style="width: auto;">❤️ Curtir <span id="like-counter">(0)</span></button>
-                </div>
-
-                <div class="detail__reviews">
-                    <h3 class="detail__reviews-title">Resenhas do Projeto</h3>
-                    <div id="reviews-list" class="reviews-list"></div>
-                    <form id="review-form" class="review-form">
-                        <textarea id="review-input" class="editor__textarea" placeholder="Deixe sua opinião sobre este trabalho..." required></textarea>
-                        <button type="submit" class="btn btn--action">Publicar Resenha</button>
-                    </form>
-                </div>
-            </article>
-        </main>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    document.getElementById('project-form').onsubmit = (e) => {
+        e.preventDefault();
+        state.projects.push({
+            id: Date.now(),
+            title: document.getElementById('proj-title').value,
+            content: document.getElementById('proj-content').value,
+            likes: 0
+        });
+        localStorage.setItem('elite_projects', JSON.stringify(state.projects));
+        showView('home');
+        render();
+    };
+});
