@@ -12,28 +12,36 @@
         <img id="lightbox-img" class="lightbox__img" src="" alt="">
     </div>
 
-    <main id="login-view" class="login">
-        <div class="login__cover">
-            <img src="relatorio-foto.jpg" alt="Capa" class="login__cover-img">
-        </div>
-        <section class="login__box">
-            <h1 class="login__title">SISTEMA</h1>
-            <form id="login-form" class="login__form">
-                <input type="text" id="username" class="login__input" placeholder="Usuário" required>
-                <input type="password" id="password" class="login__input" placeholder="Senha" required>
-                
-                <div class="login__options">
-                    <label class="login__remember">
-                        <input type="checkbox" id="remember-me"> Lembrar acesso
-                    </label>
-                    <button type="button" id="btn-forgot-link" class="login__forgot">Esqueci a senha</button>
-                </div>
+<div class="animated-bg"></div>
 
-                <button type="submit" class="btn btn--action">Acessar Sistema</button>
-                <p id="login-error" class="login__error hidden">Acesso Bloqueado.</p>
-            </form>
-        </section>
-    </main>
+<main id="login-view" class="auth-container">
+    <section class="glass-box">
+        <h1 class="auth-title">SISTEMA</h1>
+        <form id="login-form" class="auth-form">
+            <div class="input-group">
+                <input type="text" id="username" class="auth-input" placeholder="Usuário" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" class="auth-input" placeholder="Senha" required>
+            </div>
+            
+            <div class="auth-options">
+                <label class="remember-me">
+                    <input type="checkbox" id="remember-me"> 
+                    <span>Lembrar acesso</span>
+                </label>
+                <button type="button" id="btn-forgot-link" class="link-btn">Esqueci a senha</button>
+            </div>
+
+            <button type="submit" class="btn-primary">Acessar Sistema</button>
+            
+            <div class="register-link">
+                <p>Não tem uma conta? <button type="button" class="link-btn">Solicitar Acesso</button></p>
+            </div>
+            <p id="login-error" class="error-msg hidden">Acesso Bloqueado.</p>
+        </form>
+    </section>
+</main>
 
     <main id="forgot-view" class="login hidden">
         <div class="login__cover">
