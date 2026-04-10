@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const u = document.getElementById('username').value;
         const p = document.getElementById('password').value;
 
-        // Verificação Lógica
         const found = state.users.find(x => x.user === u && x.pass === p);
 
         if (found) {
@@ -30,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    // Alternância de Telas com Fluidez
     document.getElementById('go-to-register').onclick = () => {
         loginView.classList.add('hidden');
         regView.classList.remove('hidden');
