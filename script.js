@@ -1,59 +1,77 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // --- SELETORES DE INTERFACE ---
+    const state = {
+        projects: JSON.parse(localStorage.getItem('elite_projects')) || [],
+        users: JSON.parse(localStorage.getItem('elite_users')) || [
+            {user: 'admin', pass: '09072223', role: 'admin', name: 'Yasmin', email: 'admin@exemplo.com'}
+        ],
+        currentUser: null,
+        likes: JSON.parse(localStorage.getItem('elite_likes')) || {}
+    };
+
     const views = {
         login: document.getElementById('login-view'),
         register: document.getElementById('register-view'),
         app: document.getElementById('app-view'),
         home: document.getElementById('home-view'),
-        report: document.getElementById('report-view'),
-        drafts: document.getElementById('drafts-view'),
-        reportEdit: document.getElementById('report-edit-view'),
         form: document.getElementById('form-view'),
         detail: document.getElementById('detail-view')
     };
 
-    // --- ESTADO DO SISTEMA ---
-    let projects = JSON.parse(localStorage.getItem('elite_portfolio_data')) || [];
-    let users = JSON.parse(localStorage.getItem('elite_users')) || [
-        {user: 'admin', pass: '09072223', cpf: '99022348512', role: 'admin', name: 'Yasmin_Soares'},
-        {user: 'cliente', pass: '22678452', cpf: '10024543132', role: 'usuario', name: 'Convidado'}
-    ];
-    let currentUser = null;
-    let editingProjectId = null;
-    let currentViewingProject = null;
-
-    // --- FUNÇÕES DE NAVEGAÇÃO ---
-    function switchView(target) {
+    function showView(viewName) {
         Object.values(views).forEach(v => v?.classList.add('hidden'));
-        views[target].classList.remove('hidden');
-        window.scrollTo(0, 0);
+        views[viewName]?.classList.remove('hidden');
     }
 
-    // --- SISTEMA DE LOGIN E REGISTRO ---
-    const loginForm = document.getElementById('login-form');
-    loginForm.addEventListener('submit', (e) => {
+    // --- LÓGICA DE RECUPERAÇÃO DE SENHA (RESEND) ---
+    document.getElementById('btn-forgot-link').onclick = async () => {
+        const username = document.getElementById('username').value;
+        if (!username) return alert("Digite seu usuário no campo para recuperar a senha.");
+
+        const foundUser = state.users.find(u => u.user === username);
+        if (!foundUser) return alert("Usuário não encontrado.");
+
+        // Simulando a chamada para o seu backend que usa o código Java/Resend
+        try {
+            alert(`Solicitando recuperação para o usuário: ${username}...`);
+            
+            // Aqui você faria o fetch para o seu servidor
+            /*
+            const response = await fetch('https://seu-servidor.com/recuperar', {
+                method: 'POST',
+                body: JSON.stringify({ email: foundUser.email, pass: foundUser.pass })
+            });
+            */
+            
+            // Como estamos em ambiente local, mostramos o resultado:
+            alert(`SUCESSO: E-mail de recuperação enviado para o endereço cadastrado de ${username}!`);
+        } catch (error) {
+            alert("Erro ao conectar com o servidor de e-mail.");
+        }
+    };
+
+    document.getElementById('login-form').onsubmit = (e) => {
         e.preventDefault();
-        const userIn = document.getElementById('username').value;
-        const passIn = document.getElementById('password').value;
-
-        const found = users.find(u => u.user === userIn && u.pass === passIn);
-
-        if (found) {
-            currentUser = found;
-            document.getElementById('user-name').textContent = found.name;
-            setupPermissions(found.role);
-            switchView('app');
-            switchView('home');
-            renderGrids();
+        const u = document.getElementById('username').value;
+        const p = document.getElementById('password').value;
+        const found = state.users.find(x => x.user === u && x.pass === p);
+        if(found) {
+            state.currentUser = found;
+            document.getElementById('user-display-name').textContent = found.name;
+            document.querySelectorAll('.admin-only').forEach(el => {
+                found.role === 'admin' ? el.classList.remove('hidden') : el.classList.add('hidden');
+            });
+            showView('app');
+            showView('home');
+            render();
         } else {
             document.getElementById('login-error').classList.remove('hidden');
         }
-    });
+    };
 
-    document.getElementById('go-to-register').onclick = () => switchView('register');
-    document.getElementById('back-to-login').onclick = () => switchView('login');
+    document.getElementById('go-to-register').onclick = () => showView('register');
+    document.getElementById('back-to-login').onclick = () => showView('login');
 
-    document.getElementById('register-form').addEventListener('submit', (e) => {
+    document.getElementById('register-form').onsubmit = (e) => {
         e.preventDefault();
         const newUser = {
             user: document.getElementById('reg-username').value,
@@ -62,85 +80,69 @@ document.addEventListener("DOMContentLoaded", () => {
             role: 'usuario',
             name: document.getElementById('reg-username').value
         };
-        users.push(newUser);
-        localStorage.setItem('elite_users', JSON.stringify(users));
-        alert("Conta criada! Use seus dados para logar.");
-        switchView('login');
-    });
-
-    function setupPermissions(role) {
-        const adminElements = document.querySelectorAll('.admin-only');
-        adminElements.forEach(el => {
-            role === 'admin' ? el.classList.remove('hidden') : el.classList.add('hidden');
-        });
-    }
-
-    // --- GERENCIAMENTO DE PROJETOS ---
-    function saveProject(status) {
-        const projData = {
-            id: editingProjectId || Date.now(),
-            title: document.getElementById('proj-title').value,
-            year: document.getElementById('proj-year').value,
-            month: document.getElementById('proj-month').value,
-            category: document.getElementById('proj-category').value,
-            summary: document.getElementById('proj-summary').value,
-            content: document.getElementById('proj-content').value,
-            likes: editingProjectId && currentViewingProject ? currentViewingProject.likes : 0,
-            reviews: editingProjectId && currentViewingProject ? currentViewingProject.reviews : [],
-            status: status,
-            author: currentUser.user
-        };
-
-        if (editingProjectId) {
-            projects = projects.map(p => p.id === editingProjectId ? projData : p);
-        } else {
-            projects.unshift(projData);
-        }
-
-        localStorage.setItem('elite_portfolio_data', JSON.stringify(projects));
-        renderGrids();
-        switchView(status === 'published' ? 'home' : 'drafts');
-    }
-
-    function renderGrids() {
-        const projectGrid = document.getElementById('project-grid');
-        const draftsGrid = document.getElementById('drafts-grid');
-        if(!projectGrid) return;
-
-        projectGrid.innerHTML = '';
-        draftsGrid.innerHTML = '';
-
-        projects.forEach(proj => {
-            const card = document.createElement('article');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card__content">
-                    <span class="card__badge">${proj.category}</span>
-                    <h3 class="card__title">${proj.title}</h3>
-                    <p class="card__summary">${proj.summary}</p>
-                    <div class="card__footer">❤️ ${proj.likes || 0}</div>
-                </div>
-            `;
-            card.onclick = () => openProject(proj);
-
-            if (proj.status === 'published') projectGrid.appendChild(card);
-            else if (proj.author === currentUser.user) draftsGrid.appendChild(card);
-        });
-    }
-
-    function openProject(proj) {
-        currentViewingProject = proj;
-        document.getElementById('detail-title').textContent = proj.title;
-        document.getElementById('detail-body').textContent = proj.content;
-        switchView('detail');
-    }
-
-    // --- LOGOUT ---
-    document.getElementById('btn-logout').onclick = () => {
-        currentUser = null;
-        switchView('login');
+        state.users.push(newUser);
+        localStorage.setItem('elite_users', JSON.stringify(state.users));
+        alert("Conta criada.");
+        showView('login');
     };
 
-    // Inicialização
-    renderGrids();
+    function render() {
+        const grid = document.getElementById('project-grid');
+        if(!grid) return;
+        grid.innerHTML = '';
+        state.projects.forEach(p => {
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.innerHTML = `<h3>${p.title}</h3><p>${p.likes || 0} Curtidas</p>`;
+            el.onclick = () => {
+                state.activeProj = p;
+                document.getElementById('detail-title').textContent = p.title;
+                document.getElementById('detail-body').textContent = p.content;
+                document.getElementById('like-count').textContent = `(${p.likes || 0})`;
+                showView('detail');
+            };
+            grid.appendChild(el);
+        });
+    }
+
+   document.getElementById('btn-like').onclick = () => {
+        const p = state.activeProj;
+        const btn = document.getElementById('btn-like'); 
+        if (!p || !state.currentUser || !btn) return;
+        
+        const u = state.currentUser.user;
+        if(!state.likes[u]) state.likes[u] = [];
+        if(state.likes[u].includes(p.id)) return alert("Já curtiu.");
+        
+        btn.classList.add('pulse-animation');
+
+        setTimeout(() => {
+            btn.classList.remove('pulse-animation');
+        }, 300);
+
+        p.likes = (p.likes || 0) + 1;
+        state.likes[u].push(p.id);
+        localStorage.setItem('elite_projects', JSON.stringify(state.projects));
+        localStorage.setItem('elite_likes', JSON.stringify(state.likes));
+        document.getElementById('like-count').textContent = `(${p.likes})`;
+        render();
+    };
+
+    document.getElementById('nav-create').onclick = () => showView('form');
+    document.getElementById('nav-home').onclick = () => showView('home');
+    document.getElementById('btn-back-home').onclick = () => showView('home');
+    document.getElementById('btn-logout').onclick = () => location.reload();
+
+    document.getElementById('project-form').onsubmit = (e) => {
+        e.preventDefault();
+        state.projects.push({
+            id: Date.now(),
+            title: document.getElementById('proj-title').value,
+            content: document.getElementById('proj-content').value,
+            likes: 0
+        });
+        localStorage.setItem('elite_projects', JSON.stringify(state.projects));
+        showView('home');
+        render();
+    };
 });
